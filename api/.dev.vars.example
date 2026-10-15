@@ -1,0 +1,6 @@
+# Local-only overrides for `wrangler dev` — copy this file to `.dev.vars`
+# (gitignored) so local development keeps the loopback origin and dev helpers
+# while `api/wrangler.toml` carries production values.
+APP_ORIGIN=http://localhost:8787
+DEV_MODE=1
+REQUIRE_EMAIL_VERIFICATION=0

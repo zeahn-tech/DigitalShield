@@ -14,7 +14,7 @@ run_worker_first = true
 [[d1_databases]]
 binding = "DB"
 database_name = "DS_DB"
-database_id = "00000000-0000-0000-0000-000000000000" # replaced on real provisioning
+database_id = "45fa57d8-5a69-4a10-b568-501cbff44364"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
@@ -22,9 +22,15 @@ binding = "FILES"
 bucket_name = "digitalshield-files"
 
 [vars]
-APP_ORIGIN = "http://localhost:8787"
+# Production values — deployed by .github/workflows/deploy.yml.
+# Local `wrangler dev` overrides these from api/.dev.vars (copy api/.dev.vars.example).
+APP_ORIGIN = "https://digitalshield.emmanuelzeahn45.workers.dev"
+# Pilot launch: no outbound mailer is wired yet (README "Honest limitations"),
+# so verification is off to keep registration usable end-to-end.
+# Flip to "1" together with wiring api/src/lib/mailer.ts.
 REQUIRE_EMAIL_VERIFICATION = "0"
-DEV_MODE = "1"
+# Structurally inert off loopback origins (loadConfig) — set explicitly anyway.
+DEV_MODE = "0"
 SESSION_TTL_SECONDS = "1209600"
 MAX_UPLOAD_BYTES = "26214400"
 MAX_IMPORT_FILES = "200"
