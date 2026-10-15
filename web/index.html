@@ -26,10 +26,12 @@
         b.setAttribute("aria-label", "Static mirror notice");
         var link =
           '<a href="https://github.com/zeahn-tech/DigitalShield/actions/workflows/deploy.yml" style="color:inherit;text-decoration:underline">Deploy workflow</a>';
+        var app =
+          '<a href="https://digitalshield.emmanuelzeahn45.workers.dev" style="color:inherit;text-decoration:underline">open the full app</a>';
         var text =
           '<strong>Static mirror</strong> — this GitHub Pages deployment previews the UI only. ' +
-          'Accounts, vault, recovery cases and the API require the DigitalShield backend on Cloudflare. ' +
-          'Deploy it with the ' + link + '.';
+          'Accounts, vault, recovery cases and the API live on Cloudflare — ' + app + '. ' +
+          'Redeploy anytime with the ' + link + '.';
         b.innerHTML = text;
         b.style.cssText =
           'position:sticky;top:0;z-index:100;' +

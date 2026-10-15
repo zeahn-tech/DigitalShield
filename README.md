@@ -76,10 +76,10 @@ node scripts/smoke.mjs   # 57-check end-to-end smoke test against a running dev 
 
 | Target | What it serves | How |
 |---|---|---|
-| **Cloudflare (full app)** | Everything: the API, sign-in, vault, imports, recovery cases, storage | `Deploy (manual)` workflow — add the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets, then run it from the Actions tab (it re-runs all gates, applies D1 migrations, and deploys the Worker + assets) |
+| **Cloudflare (full app)** | Everything: the API, sign-in, vault, imports, recovery cases, storage — **[live at https://digitalshield.emmanuelzeahn45.workers.dev](https://digitalshield.emmanuelzeahn45.workers.dev)** | `Deploy (manual)` workflow — re-runs all gates, applies D1 migrations, and deploys the Worker + assets. Needs the `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` repository secrets (configured). |
 | **GitHub Pages (static UI mirror)** | The full interface with a clear “static mirror” banner; no API behind it | `Pages (static UI mirror)` workflow — one-time setup: Repo **Settings → Pages → Source: GitHub Actions**, after which every push to `main` publishes the built SPA to `https://zeahn-tech.github.io/DigitalShield/` |
 
-The Pages mirror injects a provenance banner on `*.github.io` hosts only, so it can never be mistaken for the working product. The real application remains the Cloudflare deployment.
+The Pages mirror injects a provenance banner on `*.github.io` hosts only, so it can never be mistaken for the working product — the banner links straight to the live Cloudflare app. The real application remains the Cloudflare deployment.
 
 ## Creating the first admin
 
