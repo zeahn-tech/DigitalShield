@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: typecheck • test • build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install lockfile-exact dependencies
+        run: npm ci
+
+      - name: TypeScript strict typecheck (api + web + shared)
+        run: npm run check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build (SPA + Worker bundle)
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          test -f dist/index.html
+          test -f build/worker.js
+          echo "dist/ and build/worker.js present"
+
+      - name: Upload build artifacts (diagnostics, 7 days)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: digitalshield-build
+          path: |
+            dist/
+            build/worker.js
+          retention-days: 7

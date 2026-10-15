@@ -1,0 +1,70 @@
+name: Deploy (manual)
+
+# Manual, secret-guarded Cloudflare deployment ("GitHub deployment standard"):
+# Requires two repository secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   — wrangler token scoped for D1 + R2 + Workers deploys
+#   CLOUDFLARE_ACCOUNT_ID  — the target Cloudflare account id
+# The job fails fast with clear guidance when either secret is missing.
+# D1 migrations run before the Worker deploy; both steps are idempotent.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: build → d1 migrate → wrangler deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+    steps:
+      - name: Pre-flight — required secrets present?
+        if: env.HAS_TOKEN != 'true'
+        run: |
+          echo "::error::Deployment secrets missing."
+          echo "Add CLOUDFLARE_API_TOKEN (D1+R2+Workers deploy scopes) and CLOUDFLARE_ACCOUNT_ID"
+          echo "in repo Settings → Secrets and variables → Actions, then dispatch this workflow again."
+          exit 1
+
+      - name: Checkout
+        if: env.HAS_TOKEN == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: env.HAS_TOKEN == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install lockfile-exact dependencies
+        if: env.HAS_TOKEN == 'true'
+        run: npm ci
+
+      - name: Verify gates (typecheck • test • build)
+        if: env.HAS_TOKEN == 'true'
+        run: |
+          npm run check
+          npm test
+          npm run build
+
+      - name: Apply D1 migrations (remote)
+        if: env.HAS_TOKEN == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '3'
+          command: d1 migrations apply DS_DB --remote --config api/wrangler.toml
+
+      - name: Deploy Worker + static assets
+        if: env.HAS_TOKEN == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '3'
+          command: deploy --config api/wrangler.toml

@@ -1,5 +1,8 @@
 # DigitalShield
 
+[![CI](https://github.com/zeahn-tech/DigitalShield/actions/workflows/ci.yml/badge.svg)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/ci.yml)
+[![Deploy (manual)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/deploy.yml/badge.svg)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/deploy.yml)
+
 **Protect your digital identity. Preserve your memories. Prepare for account emergencies.**
 
 DigitalShield is a privacy-first digital account protection, data preservation, and recovery-assistance platform. It helps individuals and small organizations prepare for account emergencies *before* they happen: preserve important digital assets, import official platform archives, organize recovery cases and evidence, follow legitimate official recovery procedures, and avoid account-recovery scams.
