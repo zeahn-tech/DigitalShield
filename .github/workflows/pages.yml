@@ -1,0 +1,73 @@
+name: Pages (static mirror)
+
+# Publishes the SPA to GitHub Pages as a static mirror of the DigitalShield UI.
+# The mirror is the same build as the app but served from a subpath and WITHOUT
+# its backend — index.html injects a provenance banner on *.github.io hosts so
+# visitors are never misled into thinking this is the full service.
+# Requires (one-time): Repo Settings → Pages → Source: "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: gates → build SPA (Pages subpath)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install lockfile-exact dependencies
+        run: npm ci
+
+      - name: Gates (typecheck • tests)
+        run: |
+          npm run check
+          npm test
+
+      - name: Build SPA for the /DigitalShield/ subpath
+        run: npm run build:web -- --base=/DigitalShield/
+        env:
+          VITE_ROUTER_BASE: /DigitalShield/
+
+      - name: SPA deep-link fallback (index → 404.html)
+        run: cp dist/index.html dist/404.html
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

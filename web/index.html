@@ -14,5 +14,30 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Static-mirror provenance banner. Shown ONLY on GitHub Pages hosts
+         (*.github.io); the real DigitalShield backend (Cloudflare deploy) never
+         displays it. Prevents the mirror from posing as the full service. -->
+    <script>
+      (function () {
+        var h = window.location.hostname;
+        if (h === "localhost" || h === "127.0.0.1" || h.indexOf(".") === -1 || !/\.github\.io$/.test(h)) return;
+        var b = document.createElement("div");
+        b.setAttribute("role", "note");
+        b.setAttribute("aria-label", "Static mirror notice");
+        var link =
+          '<a href="https://github.com/zeahn-tech/DigitalShield/actions/workflows/deploy.yml" style="color:inherit;text-decoration:underline">Deploy workflow</a>';
+        var text =
+          '<strong>Static mirror</strong> — this GitHub Pages deployment previews the UI only. ' +
+          'Accounts, vault, recovery cases and the API require the DigitalShield backend on Cloudflare. ' +
+          'Deploy it with the ' + link + '.';
+        b.innerHTML = text;
+        b.style.cssText =
+          'position:sticky;top:0;z-index:100;' +
+          'font:600 13px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;' +
+          'background:#fdf1d8;color:#6b4600;border-bottom:1px solid #eed9a8;' +
+          'padding:9px 14px;text-align:left';
+        document.body.insertBefore(b, document.body.firstChild);
+      })();
+    </script>
   </body>
 </html>

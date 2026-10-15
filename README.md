@@ -1,6 +1,7 @@
 # DigitalShield
 
 [![CI](https://github.com/zeahn-tech/DigitalShield/actions/workflows/ci.yml/badge.svg)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/ci.yml)
+[![Pages (static UI mirror)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/pages.yml/badge.svg)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/pages.yml)
 [![Deploy (manual)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/deploy.yml/badge.svg)](https://github.com/zeahn-tech/DigitalShield/actions/workflows/deploy.yml)
 
 **Protect your digital identity. Preserve your memories. Prepare for account emergencies.**
@@ -68,6 +69,15 @@ npm test         # 39 unit tests (crypto, import parsers, readiness, case number
 npm run build    # SPA + Worker bundle
 node scripts/smoke.mjs   # 57-check end-to-end smoke test against a running dev server
 ```
+
+## Deployments
+
+| Target | What it serves | How |
+|---|---|---|
+| **Cloudflare (full app)** | Everything: the API, sign-in, vault, imports, recovery cases, storage | `Deploy (manual)` workflow — add the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets, then run it from the Actions tab (it re-runs all gates, applies D1 migrations, and deploys the Worker + assets) |
+| **GitHub Pages (static UI mirror)** | The full interface with a clear “static mirror” banner; no API behind it | `Pages (static UI mirror)` workflow — one-time setup: Repo **Settings → Pages → Source: GitHub Actions**, after which every push to `main` publishes the built SPA to `https://zeahn-tech.github.io/DigitalShield/` |
+
+The Pages mirror injects a provenance banner on `*.github.io` hosts only, so it can never be mistaken for the working product. The real application remains the Cloudflare deployment.
 
 ## Creating the first admin
 
