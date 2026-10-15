@@ -47,6 +47,8 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), [DATABASE.md
 ```bash
 npm install
 
+cp api/.dev.vars.example api/.dev.vars   # local overrides for `wrangler dev` (gitignored)
+
 # apply local D1 migrations
 npm run db:local:migrate
 
@@ -59,7 +61,7 @@ npm run dev:api &        # API on 8787
 npm run dev:web          # SPA on 5173
 ```
 
-Local development runs with `DEV_MODE=1` and `REQUIRE_EMAIL_VERIFICATION=0` (see `api/wrangler.toml`). These flags are **refused on non-loopback origins** by `loadConfig`, so they cannot leak into production behavior. In dev mode, password-reset links are surfaced in the API response (logged email transport has no inbox).
+Production values live in `api/wrangler.toml` (`APP_ORIGIN` = the deployed workers.dev URL, `DEV_MODE=0`); local `wrangler dev` overrides them from `api/.dev.vars` (copy `api/.dev.vars.example` once). `DEV_MODE` can **only** take effect on loopback origins — `loadConfig` structurally multiplies it off otherwise, so the dev escape hatch cannot leak into production behavior. In dev mode, password-reset links are surfaced in the API response (logged email transport has no inbox).
 
 ### Verification
 
@@ -93,6 +95,7 @@ npx wrangler d1 execute DS_DB --local --config api/wrangler.toml \
 - Import parsing covers Facebook's JSON export variant; HTML exports are recognized but only minimally parsed (users are directed to re-download in JSON).
 - Archive formats drift over time; the importer is defensive and reports per-file outcomes rather than silently dropping data.
 - Email sending requires wiring a transactional provider in `api/src/lib/mailer.ts` (extension point documented).
+- Production currently ships `REQUIRE_EMAIL_VERIFICATION=0` (pilot state): registration works without outbound email. Flip it to `1` in `api/wrangler.toml` together with wiring the mailer.
 - MFA enrollment UI is not implemented (backend schema is ready).
 - Monetization/plans are not implemented.
 - Scam Shield's web search needs a server-side Exa key (`EXA_API_KEY`); without it the
