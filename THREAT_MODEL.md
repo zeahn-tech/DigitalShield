@@ -10,7 +10,7 @@ Personal identity data (emails, recovery contacts), photos/videos/documents, rec
 
 | Threat | Impact | Likelihood | Existing control | Additional mitigation (backlog) |
 |---|---|---|---|---|
-| External attacker — credential stuffing / brute force | Account takeover | High | PBKDF2-600k, generic errors, per-IP + per-email rate limits, 8-fail lockout, session revocation | Breach-list password checks; MFA enrollment; anomaly-based lockout tuning |
+| External attacker — credential stuffing / brute force | Account takeover | High | PBKDF2-100k (workerd cap; SECURITY.md), generic errors, per-IP + per-email rate limits, 8-fail lockout, session revocation | Breach-list password checks; MFA enrollment; anomaly-based lockout tuning |
 | External attacker — IDOR/API probing | Data exposure | High | Every query scoped to authenticated user id; 404 on foreign resources; smoke-tested IDOR suite | Automated authorization test matrix in CI |
 | CSRF / XSS against session | Account takeover | Medium | Same-origin enforcement on all mutations, SameSite=Lax cookies, strict CSP (no inline scripts), no user HTML rendering, outputs React-escaped, signed downloads served `nosniff` attachment | CSP report endpoint; token-based double-submit as defense-in-depth |
 | Malicious uploaded file (malware, polyglot, zip-slip) | User/device compromise | Medium | Extension+MIME+magic-byte validation, size caps, quarantine→scan→publish hook, path-randomized keys, never rendered inline | Real antivirus engine behind `scanBuffer`; async scanning with pending state |

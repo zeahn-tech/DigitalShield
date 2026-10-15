@@ -127,7 +127,7 @@ const t0 = Date.now();
 r = await req("/api/auth/login", { method: "POST", body: userA });
 const loginMs = Date.now() - t0;
 check("login user A", r.status === 200 && !!r.cookie, `status=${r.status} ${r.text.slice(0, 160)}`);
-console.log(`    (login with PBKDF2 600k took ${loginMs}ms)`);
+console.log(`    (password hashing took ${loginMs}ms)`);
 const A = sessionFrom(r);
 
 r = await req("/api/auth/login", { method: "POST", body: { email: userA.email, password: "WrongPass99!" } });

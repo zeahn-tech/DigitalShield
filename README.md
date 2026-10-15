@@ -38,7 +38,7 @@ DigitalShield is a privacy-first digital account protection, data preservation, 
 - **Backend:** Hono API on Cloudflare Workers (single Worker serves API + SPA).
 - **Database:** Cloudflare D1 (SQLite), versioned migrations in `api/migrations/`.
 - **File storage:** Cloudflare R2 with per-user key prefixes, quarantine → scan → publish flow, short-lived HMAC-signed download URLs.
-- **Crypto:** Web Crypto only — PBKDF2-SHA256 (600k iterations) password hashing, HMAC-SHA256 signing, AES-256-GCM envelope field encryption via HKDF-derived per-record keys.
+- **Crypto:** Web Crypto only — PBKDF2-SHA256 password hashing (100k iterations in production: Cloudflare's workerd hard-caps PBKDF2 above 100k — trade-off documented in [SECURITY.md](SECURITY.md)), HMAC-SHA256 signing, AES-256-GCM envelope field encryption via HKDF-derived per-record keys.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), [DATABASE.md](DATABASE.md), [IMPORT_ENGINE.md](IMPORT_ENGINE.md), [RECOVERY_SYSTEM.md](RECOVERY_SYSTEM.md), [PRIVACY.md](PRIVACY.md), [THREAT_MODEL.md](THREAT_MODEL.md), [DEPLOYMENT.md](DEPLOYMENT.md).
 
@@ -100,5 +100,8 @@ npx wrangler d1 execute DS_DB --local --config api/wrangler.toml \
 - Monetization/plans are not implemented.
 - Scam Shield's web search needs a server-side Exa key (`EXA_API_KEY`); without it the
   feature reports that search is unconfigured instead of returning empty results.
+- Cloudflare's workerd rejects PBKDF2 above 100k iterations, so production runs at that
+  platform maximum rather than OWASP's 600k — see SECURITY.md; an Argon2id (WASM)
+  upgrade is the documented path to a higher work factor.
 
 DigitalShield is an independent tool and is not affiliated with, endorsed by, or connected to Meta or any other platform.

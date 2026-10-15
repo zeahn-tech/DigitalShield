@@ -5,7 +5,7 @@ All notable changes are documented here. Format: Keep a Changelog, semver.
 ## [0.1.0] — 2026-10-15 (initial implementation)
 
 ### Added
-- Secure authentication: email/password with PBKDF2-SHA256 (600k iterations), email verification, password reset, session management with revocation, lockout, rate limiting, generic error messages, no-credential-logging guarantees.
+- Secure authentication: email/password with PBKDF2-SHA256 (100k iterations in production — workerd hard cap; configurable elsewhere), email verification, password reset, session management with revocation, lockout, rate limiting, generic error messages, no-credential-logging guarantees.
 - Dashboard with explainable recovery-readiness scoring (weights sum to 100; every item shows why).
 - Digital vault: uploads (quarantine → scan → publish), tags, Important marking, search/sort/filter, SHA-256 deduplication, signed short-lived download URLs.
 - Facebook archive import engine: client-side ZIP extraction, conservative format detection, defensive JSON parsers, per-file skip reporting (never silent data loss), duplicate detection, profile merge, import history.

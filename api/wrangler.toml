@@ -31,6 +31,11 @@ APP_ORIGIN = "https://digitalshield.emmanuelzeahn45.workers.dev"
 REQUIRE_EMAIL_VERIFICATION = "0"
 # Structurally inert off loopback origins (loadConfig) — set explicitly anyway.
 DEV_MODE = "0"
+# workerd hard-caps PBKDF2 above 100000 iterations in production
+# (github.com/cloudflare/workerd/issues/1346) — an implementation check,
+# not a plan tier. Platform maximum; OWASP prefers 600k — trade-off
+# documented in SECURITY.md and DEPLOYMENT.md.
+PBKDF2_ITERATIONS = "100000"
 SESSION_TTL_SECONDS = "1209600"
 MAX_UPLOAD_BYTES = "26214400"
 MAX_IMPORT_FILES = "200"

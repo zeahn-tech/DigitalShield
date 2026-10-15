@@ -24,9 +24,13 @@ Local `wrangler dev` overrides them from `api/.dev.vars` (copy `api/.dev.vars.ex
 
 **Never commit secrets.** `.env.example` contains placeholders only.
 
-## PBKDF2 CPU consideration
+## PBKDF2 iteration cap (Cloudflare runtime)
 
-600k PBKDF2 iterations per login/register runs on Worker CPU. This needs a Workers plan with a sufficient CPU limit (Workers Paid, e.g. 30s CPU). On the free tier, lower `PBKDF2_ITERATIONS` (e.g. 60_000) **only** after documenting the reduced security trade-off, or move hashing off-request. Do not silently ship a weakened default.
+The production workerd runtime **rejects PBKDF2 iteration counts above 100,000** (`NotSupportedError`, observed at register/login; see [workerd#1346](https://github.com/cloudflare/workerd/issues/1346)). The limit is an implementation check, not a plan tier — Workers Paid does not lift it — and it is not listed in Cloudflare's public limits documentation.
+
+Production therefore sets `PBKDF2_ITERATIONS = "100000"` — the highest value the platform accepts. This is below OWASP's 600,000 recommendation for PBKDF2-HMAC-SHA256 and is a **documented trade-off** (SECURITY.md), not a silent weakening. Each hash stores its own iteration count (`pbkdf2-sha256$iterations$salt$hash`), so verification remains correct across runtimes with different caps.
+
+Path to a stronger work factor on Workers: a WASM Argon2id/scrypt implementation (OWASP's preferred algorithms), benchmarked under real login concurrency before switching. Do not invent chained-PBKDF2 constructions — they are not equivalent to a single higher-iteration derivation.
 
 ## Release checklist
 

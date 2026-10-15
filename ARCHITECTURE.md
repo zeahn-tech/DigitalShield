@@ -47,9 +47,10 @@ matched before static assets.
 
 ## Key design decisions
 
-- **PBKDF2-SHA256 @ 600k iterations** (OWASP 2023) via Web Crypto. No
-  native-dependency libraries work on Workers; see DEPLOYMENT.md for the
-  plan/CPU consideration.
+- **PBKDF2-SHA256** via Web Crypto; iterations configurable and stored per
+  hash (production: 100k — workerd rejects counts above 100k, see
+  SECURITY.md/DEPLOYMENT.md). No native-dependency libraries work on
+  Workers.
 - **Envelope field encryption** (AES-256-GCM, HKDF per-record key, record id
   as salt context) for sensitive columns (recovery phone). Rationale over
   zero-knowledge client-side encryption: server-side search, recovery-package

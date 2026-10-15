@@ -2,9 +2,11 @@
  * Cryptographic primitives (Web Crypto only — works on Cloudflare Workers).
  *
  * - Password hashing: PBKDF2-SHA256 with a per-password random salt.
- *   Iteration count is configurable; default 600,000 per OWASP 2023 guidance.
- *   NOTE: PBKDF2 at this cost requires a Workers plan with a sufficient CPU
- *   limit (Workers Paid). See DEPLOYMENT.md.
+ *   Iteration count is configurable (default 600,000 per OWASP 2023) and
+ *   stored with each hash. NOTE: Cloudflare's production workerd rejects
+ *   counts above 100,000 (github.com/cloudflare/workerd/issues/1346) —
+ *   production sets PBKDF2_ITERATIONS to that platform maximum.
+ *   See SECURITY.md / DEPLOYMENT.md.
  * - Signing: HMAC-SHA256 for signed download URLs and token hashing.
  * - Envelope encryption: AES-256-GCM with a per-record data key derived from
  *   a master key via HKDF (record id as salt context).
