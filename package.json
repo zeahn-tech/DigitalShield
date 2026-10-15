@@ -1,0 +1,39 @@
+{
+  "name": "digitalshield",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DigitalShield — privacy-first digital account protection, data preservation & recovery-assistance platform",
+  "scripts": {
+    "dev:api": "wrangler dev --config api/wrangler.toml --port 8787 --ip 0.0.0.0",
+    "dev:web": "vite",
+    "build:web": "vite build",
+    "build:worker": "esbuild api/src/index.ts --bundle --format=esm --target=es2022 --outfile=build/worker.js --conditions=workerd,default",
+    "build": "npm run build:web && npm run build:worker",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke.mjs",
+    "db:local:migrate": "wrangler d1 migrations apply DS_DB --local --config api/wrangler.toml"
+  },
+  "dependencies": {
+    "exa-js": "2.25.0",
+    "fflate": "^0.8.2",
+    "hono": "^4.6.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250115.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8",
+    "wrangler": "^3.104.0"
+  }
+}

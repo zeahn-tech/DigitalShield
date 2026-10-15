@@ -1,0 +1,35 @@
+name = "digitalshield"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Serve the built SPA from the same Worker (assets first, API on /api/*)
+[assets]
+directory = "../dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+# Worker handles /api/* first, then delegates to static assets.
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "DS_DB"
+database_id = "00000000-0000-0000-0000-000000000000" # replaced on real provisioning
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "digitalshield-files"
+
+[vars]
+APP_ORIGIN = "http://localhost:8787"
+REQUIRE_EMAIL_VERIFICATION = "0"
+DEV_MODE = "1"
+SESSION_TTL_SECONDS = "1209600"
+MAX_UPLOAD_BYTES = "26214400"
+MAX_IMPORT_FILES = "200"
+
+# Production secrets (set via `wrangler secret put` or Sites → Secrets):
+# - ENCRYPTION_MASTER_KEY
+# - EMAIL_PROVIDER_API_KEY
+# - EXA_API_KEY   (web search for Scam Shield; server-side only)
